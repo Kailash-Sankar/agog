@@ -1,0 +1,63 @@
+{% verbatim %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet">
+	<div class="mdl-card mdl-shadow--4dp card-todo bg-color-x2 pre-this" ng-controller="Answers">
+		<div class="mdl-card__title">
+			<h2 class="mdl-card__title-text">Answers</h2>
+			<span class="add-ico">
+				<i class="material-icons">autorenew</i>             
+			</span>
+		</div>
+		
+		<div ng-model="answers"
+		ng-repeat="(aid, answer) in answers">
+
+		<div class="mdl-card__media"> 
+			<div class="line-breaker"></div>
+			<div class="pre-content">{{ answer.description }}</div>
+		</div>
+
+		<div class="mdl-card__supporting-text">
+			
+			<span class="post-sig">
+				<span class="add-ico">
+					<i class="material-icons">account_box</i>
+				</span>      
+				<span class="up">
+					{{ answer.username }}
+				</span>
+				<span class="up">
+					| Posted on: {{ answer.created_date | date:'medium' }}
+				</span>
+				<span class="up">
+					| Updated on: {{ answer.updated_date | date:'medium' }}
+				</span>
+			</span>
+
+			<span class="like-co">
+				<span class="mdl-chip mdl-chip--contact">
+					<span class="mdl-chip__contact mdl-color--primary mdl-color-text--black">{{ answer.likes || 0}}</span>
+					<span class="mdl-chip__text">
+						<span class="like up" ng-class="{liked: answer.mylike == true }">
+							<i class="material-icons" ng-click="like(answer.aid)">play_arrow</i>
+						</span>
+						<span class="like down" ng-class="{liked: answer.mylike == false }">
+							<i class="material-icons" ng-click="dislike(answer.aid)">play_arrow</i>
+						</span>  
+					</span>
+				</span>
+			</span> 
+
+		</div>
+	</div>
+
+	<div class="mdl-card__media" ng-if="answers.length == 0"
+	> 
+	<div class="line-breaker"></div>
+	<div class="pre-content">There are no answers for this question. Be the first one to answer this!</div>
+</div>
+
+
+</div>
+</div> 
+{% endverbatim %}
+
