@@ -52,8 +52,12 @@
 
 .post-sig span.down {
   position: absolute;
-  top: 0px;
+  top: 4px;
   font-size: 14px;
+}
+
+span.down a {
+  text-decoration: none;
 }
 
 .date-time {
@@ -263,7 +267,8 @@ i.profile {
 /* ---------- mdl form ---------- */
 
 .ask-form .mdl-textfield,
-.answer-form .mdl-textfield {
+.answer-form .mdl-textfield,
+.profile-form .mdl-textfield {
   width: 500px;  
 }
 

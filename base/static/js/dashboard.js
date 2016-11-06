@@ -3,6 +3,7 @@
 //Trending Unanswered Questions Card
 app.controller('trendingQuestions', function($scope, $http, $rootScope, $timeout, jaximus) {
   
+  $scope.trendingItems = [];
   loadTrending();  
 
   //indicate when new data is ready
@@ -19,14 +20,15 @@ app.controller('trendingQuestions', function($scope, $http, $rootScope, $timeout
      	console.log('something went wrong.')
     });
 
-    jaximus.toastThis('Data loaded from browser storage.');
+    jaximus.toastThis('Data loaded');
   }
- 
+
 });
 
 //Trending Answered Questions
 app.controller('trendingAnswers', function($scope, $http, $rootScope, $timeout, jaximus) {
   
+  $scope.trendingItems = [];
   loadTrending();  
 
   //indicate when new data is ready
@@ -43,14 +45,15 @@ app.controller('trendingAnswers', function($scope, $http, $rootScope, $timeout, 
      	console.log('something went wrong.')
     });
 
-    jaximus.toastThis('Data loaded from browser storage.');
+    jaximus.toastThis('Data loaded.');
   }
 });
   
 //My Questions
 app.controller('myQuestions', function($scope, $http, $rootScope, $timeout, jaximus) {
   
-  //loadTrending();  
+  $scope.trendingItems = [];
+  loadTrending();  
 
   //indicate when new data is ready
   $scope.newDataAvailable = false;
@@ -66,7 +69,7 @@ app.controller('myQuestions', function($scope, $http, $rootScope, $timeout, jaxi
       console.log('something went wrong.')
     });
 
-    jaximus.toastThis('Data loaded from browser storage.');
+    jaximus.toastThis('Data loaded.');
   }
  
 });

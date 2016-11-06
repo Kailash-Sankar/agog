@@ -30,14 +30,7 @@ class Answer(models.Model):
 class Category(models.Model):
 	name = models.CharField(max_length=80)
 	sort_id = models.IntegerField()
-
-	def __str__(self):
-		return self.name 
-
-class SubCategory(models.Model):
-	name = models.CharField(max_length=80)
-	sort_id = models.IntegerField()
-	category = models.ForeignKey('Category')
+	parent = models.ForeignKey('Category',null=True,blank=True)
 
 	def __str__(self):
 		return self.name 
@@ -60,7 +53,13 @@ class ALike(models.Model):
 	class Meta:
 		unique_together = (('user', 'answer'),)			
 
-class Tag(models.Model):	
-	subcat = models.ForeignKey('SubCategory')
+class QTag(models.Model):	
+	cat = models.ForeignKey('Category')
 	question = models.ForeignKey('Question')
 
+class UTag(models.Model):
+	cat = models.ForeignKey('Category')
+	user = models.ForeignKey(User)
+
+	def __str__(self):
+		return self.cat.name 

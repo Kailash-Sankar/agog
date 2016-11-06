@@ -107,6 +107,36 @@ app.filter('reverse', function() {
   };
 });
 
+//attach global utility routines
+app.run(function($rootScope,$window) {
+        
+        //redirect to question page
+        $rootScope.redirQ = function(qid) {
+            console.log('redirection to',qid);
+            $window.location.href = '/question/' + qid;
+        };
+
+        //redirect to question with 'focus' on answer
+
+});
+
+/* dirty bit check on updated mdl form elements
+app.directive('mdlDirtyCheck', ['$timeout', function ($timeout) {
+  return {
+    link: function ($scope, element, attrs) {
+      $scope.$on('dataloaded', function () {
+        console.log('data directive exec');
+        $timeout(function () { 
+            $("form .mdl-textfield").each( function() {
+              $(this).get(0).MaterialTextfield.checkDirty();              
+            });
+        }, 100, false);
+      })
+    }
+  };
+}]);
+*/
+
 /*
 app.directive('eatClick', function() {
     return function(scope, element, attrs) {

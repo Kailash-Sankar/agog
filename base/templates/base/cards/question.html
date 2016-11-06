@@ -1,3 +1,4 @@
+{% verbatim %}
 <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet">
   <div class="mdl-card mdl-shadow--4dp card-todo bg-color-x1 pre-this" ng-controller="Questions">
     <div class="mdl-card__title">
@@ -7,8 +8,7 @@
       </span>
     </div>
 
-    <div class="mdl-card__media">
-      <input type="hidden" value="{{ q.qid }}" name='qid'>
+    <div class="mdl-card__media">      
       <div class="line-breaker"></div>
       <div class="pre-content"> 
         {{ q.description }}       
@@ -19,12 +19,10 @@
       <span class="post-sig">
         <span class="add-ico">
           <i class="material-icons profile">account_box</i>
-        </span>
-        {% if q.myQ %}
-          <span class="down">
+        </span>        
+        <span class="down" ng-if="q.myQ">
             <a href="#">Edit</a>
-          </span>       
-        {% endif %}  
+        </span>                       
         <span class="up">
           {{ q.user }}
         </span>
@@ -36,17 +34,22 @@
         </span>
       </span>  
 
-      <span class="like-co">
-      <span class="mdl-chip mdl-chip--contact">
-        <span class="mdl-chip__contact mdl-color--primary mdl-color-text--black">{{ q.likes }}</span>
-        <span class="mdl-chip__text">
-          <span class="like up"><i class="material-icons">play_arrow</i></span>
-          <span class="like down"><i class="material-icons">play_arrow</i></span>  
+    <span class="like-co">
+        <span class="mdl-chip mdl-chip--contact">
+          <span class="mdl-chip__contact mdl-color--primary mdl-color-text--black">{{ q.likes }}</span>
+          <span class="mdl-chip__text">
+            <span class="like up" ng-class="{liked: q.mylike == true }">
+              <i class="material-icons" ng-click="like(q.qid)">play_arrow</i>
+            </span>
+            <span class="like down" ng-class="{liked: q.mylike == false }">
+              <i class="material-icons" ng-click="dislike(q.qid)">play_arrow</i>
+            </span>  
+          </span>
         </span>
-      </span>
     </span>    
 
     </div>
 
 </div>
-</div>   
+</div>
+{% endverbatim %}   

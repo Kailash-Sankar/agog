@@ -1,9 +1,66 @@
 
 app.controller('Questions', function($scope, $http, $rootScope, $timeout, jaximus) {
    $rootScope.qid = $('input[name="qid"]').val(); //default to zero
- });
 
-console.log('hitting this');
+
+    loadQuestion();
+
+    //load question for a qid
+    function loadQuestion() {             
+      var url = '/q/' + $rootScope.qid;    
+      jaximus.loadDataSet(url)
+      .success(function(data, status, headers, config) {
+        console.log(data);
+        $scope.q = data;                  
+      })
+      .error(function(data, status, headers, config) {
+        console.log('something went wrong.')
+      });
+
+      jaximus.toastThis('Data loaded.');
+    }
+
+    //like a question
+    $scope.like = function(qid) {
+      console.log('like',qid);
+
+      if( $scope.q.mylike == true ) {
+        return;
+      }
+
+      $scope.q.likes += 1;
+
+      jaximus.likePost('question',qid,true)
+      .success(function(){
+        $scope.q.mylike = true;  
+      })
+      .error(function(){
+        $scope.q.likes -= 1;
+      });
+    }
+
+    //dislike a question
+    $scope.dislike = function(qid) {
+      console.log('dislike',qid);
+
+      if( $scope.q.mylike == false ) {
+        return;
+      }
+
+      $scope.q.likes -= 1;
+
+      jaximus.likePost('question',qid,false)
+      .success(function(){
+        $scope.q.mylike = false;
+      })
+      .error(function(){
+        $scope.q.likes += 1;
+      });
+    }
+
+});
+
+
 app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
 
   console.log('hitting this');
@@ -81,14 +138,14 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
   };
 
   $scope.saveAnswer = function() {
-      console.log('save',$scope.new);
-      
-      var url = '/question/' + $rootScope.qid + '/answer/save';
-      $scope.new.qid = $rootScope.qid;
-      jaximus.saveDataSet(url,$scope.new)
-      .success(function(data, status, headers, config) {
-        console.log(data);         
-        
+    console.log('save',$scope.new);
+
+    var url = '/question/' + $rootScope.qid + '/answer/save';
+    $scope.new.qid = $rootScope.qid;
+    jaximus.saveDataSet(url,$scope.new)
+    .success(function(data, status, headers, config) {
+      console.log(data);         
+
         //add the new answer    
         $scope.answers[data.aid] = data;
 
@@ -97,17 +154,17 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
         $scope.new = {};
         
         jaximus.toastThis('Answer Saved.');          
-          
-    })
-    .error(function(data, status, headers, config) {
-        jaximus.toastThis('Error. Please try again.');
-        console.log('something went wrong.')
-    });
-    };
 
-    $(window).load(function () {
-      $('input[data-required],textarea[data-required]').attr('required', true);
+      })
+    .error(function(data, status, headers, config) {
+      jaximus.toastThis('Error. Please try again.');
+      console.log('something went wrong.')
     });
+  };
+
+  $(window).load(function () {
+    $('input[data-required],textarea[data-required]').attr('required', true);
+  });
 
 
 });

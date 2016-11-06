@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from base.models import *
 import logging
 import json
+from django.db.models import F
 
 #logger instance
 logger = logging.getLogger(__name__)
@@ -58,7 +59,18 @@ def dashboard(request):
 def ask(request):	
 	return render( request, 'base/ask_question.html', {})
 	
+def view_question(request,qid):
+	user = request.user;
+	return render( request, 'base/view_question.html', { 'qid' : qid })
+
+def profile(request):
+	return render( request, 'base/user_profile.html')	
+
+# ---- API endpoints -----
+
 def question(request,qid):
+	print 'question:',qid
+
 	qObj = Question.objects.get(id=qid); #.values();
 	user = request.user;
 
@@ -66,36 +78,58 @@ def question(request,qid):
 		'qid'			: qObj.id,
 		'summary' 		: qObj.summary,
 		'description' 	: qObj.description,
-		'user' 			: qObj.user,
+		'user' 			: qObj.user.username,
 		'created_date' 	: qObj.created_date,
 		'updated_date' 	: qObj.updated_date,
 		'likes'			: qObj.likes,
 		'myQ'		    : False,
+		'myLike'		: False,
 	}
 
-	if qObj.user.id == user.id:
+	#check if logged in user liked this answer		
+	try:
+   		likeObj = QLike.objects.filter(question=qid,user=user.id).get()   			
+   		mylike = likeObj.like
+	except QLike.DoesNotExist:
+   		mylike = None
+   	except AttributeError:
+   		myLike = None	
+ 	  			
+ 	q['mylike'] = mylike   		
+		
+ 	if qObj.user.id == user.id:
 		q['myQ'] = True
 
 	print q;
-	return render( request, 'base/view_question.html', { 'q' : q })
+	return JsonResponse(q,safe=False);
 
 
-# ---- API endpoints -----
 def tags(request,query):
-	cat = Category.objects.filter(name__icontains=query).values('name','id')
-	subcat = SubCategory.objects.filter(name__icontains=query).values('name','id')
-
-	tags = list(cat) + list(subcat)
+	print query
+	cat = Category.objects.filter(name__icontains=query).annotate(cid=F('id')).values('name','cid')	
+	
+	tags = list(cat); 
+	print tags;
 	return JsonResponse(tags,safe=False)
 
 def trending(request,type):
+	user = request.user
+
+	trendingItems = [];
+
 	logger.debug('this is the type',type)
 	if type == 'questions':
-		trendingItems = list( Question.objects.values('summary','likes') )
-		return JsonResponse(trendingItems,safe=False)
+		trendingItems = list( Question.objects.all()[:5].values('summary','likes','id') )
+		
 	elif type == 'answers':	
 		trendingItems = [{ 'summary' : 'it works.' },{ 'summary' : 'why'}]
-		return JsonResponse(trendingItems,safe=False)
+		
+	elif type == 'my':
+		trendingItems = list( 
+			Question.objects.filter(user_id=user.id).order_by('-id')[:5].values() 
+		)
+
+	return JsonResponse(trendingItems,safe=False)	
 
 def answers(request,qid,page):
 	ansObj = Answer.objects.filter(question=qid);
@@ -106,62 +140,34 @@ def answers(request,qid,page):
 		row = buildAnswerRow(a,user);
 		ansList[a.id] = row;
 		
-	print ansList	
 	return JsonResponse(ansList,safe=False)
 
 
-
-def like(request,aid):
+def alike(request,aid):
 	#json input
 	data = json.loads(request.body)
 	user = request.user
 
 	#load answer 
 	ansObj =  Answer.objects.get(id=aid)
-	status = False;
-
-	print data;
-	bool_like = data['like']
-
-	if ansObj and type(bool_like) == type(True):
-
-		#update count in answer		
-		if bool_like == True:		
-			#upvote
-			ansObj.likes = ansObj.likes + 1
-		elif bool_like == False:
-			#down vote
-			ansObj.likes = ansObj.likes - 1
-		else:
-			#delete the vote
-			ansObj.likes = ansObj.likes - 1
-
-		#update/create like row		
-		obj, created = ALike.objects.update_or_create(
-			answer_id = aid,
-			user_id = user.id,
-			defaults = {
-				'like' : bool_like
-			}
-		)
-
-		if created:
-			print 'row added';
-		if obj:
-			print 'row updated';
-
-		#save incremented count	
-		ansObj.save()
-		status = True;
 	
-	return JsonResponse({ 'status' : status, 'aid' :aid })
+	#hadle dem likes
+	res = likeThis(ansObj,data,user)
+	return JsonResponse(res)
 
+def qlike(request,qid):
+	data = json.loads(request.body)
+	user = request.user
+
+	#load Question
+	qObj =  Question.objects.get(id=qid)	
+
+	res = likeThis(qObj,data,user)
+	return JsonResponse(res)
 
 def saveQuestion(request):
 	data = json.loads(request.body)
 	user = request.user
-
-	print data
 
 	qObj = Question(
 		summary=data['summary'],
@@ -173,19 +179,17 @@ def saveQuestion(request):
 
 	for tag in data['tags']:
 		if tag['id']:
-			tObj = Tag(subcat_id=tag['id'],question_id=qObj.id)
+			tObj = QTag(cat_id=tag['id'],question_id=qObj.id)
 			tObj.save()
 		else:
-			print 'user tags',tag['name']
+			print 'custom tags',tag['name']
 
 	return JsonResponse({ 'qid' :qObj.id }) 		
-	#return render( request, 'base/cards/question.html', { 'q' : qObj })
+	
 
 def saveAnswer(request,qid):
 	data = json.loads(request.body)
 	user = request.user
-
-	print data
 
 	aObj = Answer(		
 		description=data['description'],
@@ -200,8 +204,65 @@ def saveAnswer(request,qid):
 	return JsonResponse(aRow) 		
 	
 
+def me(request):
+	user = request.user
+
+	profile = { 
+		'username' : user.username,
+		'first_name' : user.first_name,
+		'last_name' : user.last_name,
+		'about' : 'lorem ipsum',
+	}
+	profile['tags'] = UTags(user.id);
+
+	return JsonResponse(profile,safe=False)
+
+def userTags(request):
+	user = request.user
+	tags = UTags(user.id)
+
+	return JsonResponse(tags,safe=False)
+
+'''		
+	for x in xtags:
+		if x not in vtags:
+			print 'deleting',
+			delObj = UTag.objects.filter(cat_id=id,user_id=user.id);
+			delObj.delete()	
+'''
+def saveUserTags(request):
+	tags = json.loads(request.body)
+	user = request.user
+	xtags = list( UTag.objects.filter(user_id=user.id).select_related('cat').annotate(cid=F('cat__id')).values_list('cid',flat=True) )
+
+	print 'tags',tags
+	print 'xtags',xtags
+
+	#create new tag-map if it doesn't exist in db
+	vtags = [];
+	for tag in tags:
+		if tag['cid']:
+			tObj, created = UTag.objects.get_or_create(cat_id=tag['cid'],user_id=user.id)			
+			vtags.append(tag['cid'])
+		else:
+			print 'custom tags',tag['name']
+
+	#delete remaining tags		
+	for x in xtags:
+		if x not in vtags:
+			print 'deleting',x
+			delObj = UTag.objects.filter(cat_id=x,user_id=user.id)
+			delObj.delete()	
+
+	#get all user tags		
+	all_tags = UTags(user.id)		
+
+	return JsonResponse(all_tags,safe=False) 	
+
+
 # ---------- local routines -----------
 
+#build row for one answer
 def buildAnswerRow(a,user):
 	row = {
 		'aid' 			: a.id,
@@ -216,7 +277,6 @@ def buildAnswerRow(a,user):
 
 	#check if logged in user liked this answer		
 	try:
-		print a.id,user.id
    		likeObj = ALike.objects.filter(answer=a.id,user=user.id).get()   			
    		mylike = likeObj.like
 	except ALike.DoesNotExist:
@@ -231,3 +291,70 @@ def buildAnswerRow(a,user):
 		row['myAns'] = True;
 
 	return row
+
+#Return tags associated with a question	
+def QTags(qid):
+	cat = QTag.objects.filter(question_id=qid).select_related('cat').annotate(cid=F('cat__id'),name=F('cat__name')).values('cid','name')	
+	tags = list(cat); 
+	return tags;
+
+#Return tags associated with a user	
+def UTags(uid):
+	cat = UTag.objects.filter(user_id=uid).select_related('cat').annotate(cid=F('cat__id'),name=F('cat__name')).values('cid','name')	
+	print cat;
+	tags = list(cat); 
+	return tags;
+
+#changes the like value for a question or an answer
+def likeThis(Obj,data,user):
+	
+	status = False;
+	bool_like = data['like']
+
+	print data
+	print Obj
+
+	if Obj and type(bool_like) == type(True):
+
+		#update count in answer		
+		if bool_like == True:		
+			#upvote
+			Obj.likes = Obj.likes + 1
+		elif bool_like == False:
+			#down vote
+			Obj.likes = Obj.likes - 1
+		else:
+			#delete the vote
+			Obj.likes = Obj.likes - 1
+
+		if isinstance(Obj, Answer):
+			#update/create like row		
+			newObj, created = ALike.objects.update_or_create(
+				answer_id = Obj.id,
+				user_id = user.id,
+				defaults = {
+					'like' : bool_like
+				}
+			)
+		elif isinstance(Obj, Question):	
+			#update/create like row		
+			newObj, created = QLike.objects.update_or_create(
+				question_id = Obj.id,
+				user_id = user.id,
+				defaults = {
+					'like' : bool_like
+				}
+			)
+
+		if created:
+			print 'row added'
+		if newObj:
+			print 'row updated'
+
+		#save incremented count	
+		Obj.save()
+		status = True
+	
+	return { 'status' : status, 'id' : Obj.id }
+
+	

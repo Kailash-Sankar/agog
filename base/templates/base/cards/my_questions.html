@@ -12,14 +12,24 @@
         <div class="line-breaker"></div>
         <ul>
           <li class="td-li" ng-model="trendingItems" ng-repeat="item in trendingItems track by $index">          
-            <span class="">{{item.summary}}</span>                                
-            <div class="item-due-date" ng-show="item.dt">Added: {{item.dt | date:'MMM dd, yyyy' }} </div>
+            <span class="clickable" ng-click="redirQ(item.id)">{{item.summary}}</span>                                
+            <span class="like-co">
+              <span class="mdl-chip mdl-chip--contact">
+                <span class="mdl-chip__contact mdl-color--primary mdl-color-text--black">{{ item.likes }}</span>
+                <span class="mdl-chip__text">
+                  <span class="like up"><i class="material-icons">play_arrow</i></span>
+                  <span class="like down"><i class="material-icons">play_arrow</i></span>  
+                </span>
+              </span>
+            </span>
+
             <div class="line-breaker tdl"></div>
           </li>
           <ul>
       </div>
 
-      <div class="mdl-card__supporting-text">
+      <div class="mdl-card__supporting-text" ng-if="trendingItems.length == 0">
+        There are no items to show :(
       </div>
 
       <div class="mdl-card__actions">

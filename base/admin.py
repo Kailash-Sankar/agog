@@ -2,10 +2,7 @@ from django.contrib import admin
 from .models import *
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name','sort_id')
-
-class SubCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name','sort_id')
+    list_display = ('name','sort_id','parent')
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('summary','created_date','user')
@@ -23,10 +20,17 @@ class QLikeAdmin(admin.ModelAdmin):
 class ALikeAdmin(admin.ModelAdmin):	
 	list_display = ('user','answer')
 
+class QTagAdmin(admin.ModelAdmin): 
+    list_display = ('question','cat')
+
+class UserTagAdmin(admin.ModelAdmin): 
+    list_display = ('user','cat')
+
 # Register your models here.
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(QLike, QLikeAdmin)
 admin.site.register(ALike, ALikeAdmin)
+admin.site.register(QTag, QTagAdmin)
+admin.site.register(UTag, UserTagAdmin)
