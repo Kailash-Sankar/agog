@@ -22,4 +22,9 @@ urlpatterns = [
     #like
     #url(r'^question/([0-9]+)/like$', views.like, name='like'),
     url(r'^answer/([0-9]+)/like$', views.like, name='like'),
+
+    #save
+    url(r'^question/save$', views.saveQuestion, name='saveq'),   
+    url(r'^question/([0-9]+)/answer/save$', views.saveAnswer, name='savea'),   
+
 ] 

@@ -7,10 +7,15 @@ console.log('hitting this');
 app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
 
   console.log('hitting this');
-  $scope.answers = [];
 
-  //first load
+  //defaults
+  $scope.answers = [];
+  $scope.noa = 0;
   $scope.page = 1;
+  $scope.addMode = false;
+  $scope.new = {};
+
+
   loadAnswers();  
 
   //indicate when new data is ready
@@ -22,15 +27,17 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
     jaximus.loadDataSet(url)
     .success(function(data, status, headers, config) {
     	console.log(data);
-     $scope.answers = data;      				
+     $scope.answers = data;          
+     $scope.noa =  Object.keys($scope.answers).length;	     
    })
     .error(function(data, status, headers, config) {
       console.log('something went wrong.')
     });
 
-    jaximus.toastThis('Data loaded from browser storage.');
+    jaximus.toastThis('Data loaded.');
   }
 
+  //like an anwser
   $scope.like = function(aid) {
     console.log('like',aid);
 
@@ -49,6 +56,7 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
     });
   }
 
+  //dislike an answer
   $scope.dislike = function(aid) {
     console.log('dislike',aid);
 
@@ -66,5 +74,40 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
       $scope.answers[aid].likes += 1;
     });
   }
+
+  //toggle add new form
+  $scope.toggleForm = function() {
+    $scope.addMode = !$scope.addMode;
+  };
+
+  $scope.saveAnswer = function() {
+      console.log('save',$scope.new);
+      
+      var url = '/question/' + $rootScope.qid + '/answer/save';
+      $scope.new.qid = $rootScope.qid;
+      jaximus.saveDataSet(url,$scope.new)
+      .success(function(data, status, headers, config) {
+        console.log(data);         
+        
+        //add the new answer    
+        $scope.answers[data.aid] = data;
+
+        //reset add form
+        $scope.addMode = false;
+        $scope.new = {};
+        
+        jaximus.toastThis('Answer Saved.');          
+          
+    })
+    .error(function(data, status, headers, config) {
+        jaximus.toastThis('Error. Please try again.');
+        console.log('something went wrong.')
+    });
+    };
+
+    $(window).load(function () {
+      $('input[data-required],textarea[data-required]').attr('required', true);
+    });
+
 
 });

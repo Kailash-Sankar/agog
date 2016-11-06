@@ -59,7 +59,23 @@ def ask(request):
 	return render( request, 'base/ask_question.html', {})
 	
 def question(request,qid):
-	q = Question.objects.get(id=qid); #.values();
+	qObj = Question.objects.get(id=qid); #.values();
+	user = request.user;
+
+	q = {
+		'qid'			: qObj.id,
+		'summary' 		: qObj.summary,
+		'description' 	: qObj.description,
+		'user' 			: qObj.user,
+		'created_date' 	: qObj.created_date,
+		'updated_date' 	: qObj.updated_date,
+		'likes'			: qObj.likes,
+		'myQ'		    : False,
+	}
+
+	if qObj.user.id == user.id:
+		q['myQ'] = True
+
 	print q;
 	return render( request, 'base/view_question.html', { 'q' : q })
 
@@ -87,31 +103,13 @@ def answers(request,qid,page):
 
 	ansList = {};
 	for a in ansObj:
-		row = {
-			'aid' 			: a.id,
-			'description' 	: a.description,
-			'username' 		: a.user.username,
-			'uid'			: a.user.id,
-			'created_date' 	: a.created_date,
-			'updated_date' 	: a.updated_date,
-			'likes'			: ALike.objects.filter(answer=a.id).count(),			
-		}
-
-		#check if logged in user like this answer		
-		try:
-			print a.id,user.id
-   			likeObj = ALike.objects.filter(answer=a.id,user=user.id).get()   			
-   			mylike = likeObj.like
-		except ALike.DoesNotExist:
-   			mylike = None
-   		except AttributeError:
-   			myLike = None	
- 		  			
- 		row['mylike'] = mylike   		
+		row = buildAnswerRow(a,user);
 		ansList[a.id] = row;
-
+		
 	print ansList	
 	return JsonResponse(ansList,safe=False)
+
+
 
 def like(request,aid):
 	#json input
@@ -149,7 +147,6 @@ def like(request,aid):
 
 		if created:
 			print 'row added';
-
 		if obj:
 			print 'row updated';
 
@@ -158,3 +155,79 @@ def like(request,aid):
 		status = True;
 	
 	return JsonResponse({ 'status' : status, 'aid' :aid })
+
+
+def saveQuestion(request):
+	data = json.loads(request.body)
+	user = request.user
+
+	print data
+
+	qObj = Question(
+		summary=data['summary'],
+		description=data['description'],
+		user_id = user.id,
+		likes=0
+	);
+	qObj.save();
+
+	for tag in data['tags']:
+		if tag['id']:
+			tObj = Tag(subcat_id=tag['id'],question_id=qObj.id)
+			tObj.save()
+		else:
+			print 'user tags',tag['name']
+
+	return JsonResponse({ 'qid' :qObj.id }) 		
+	#return render( request, 'base/cards/question.html', { 'q' : qObj })
+
+def saveAnswer(request,qid):
+	data = json.loads(request.body)
+	user = request.user
+
+	print data
+
+	aObj = Answer(		
+		description=data['description'],
+		user_id = user.id,
+		likes=0,
+		question_id=qid,
+	);
+	aObj.save();
+
+	aRow = buildAnswerRow(aObj,user);
+
+	return JsonResponse(aRow) 		
+	
+
+# ---------- local routines -----------
+
+def buildAnswerRow(a,user):
+	row = {
+		'aid' 			: a.id,
+		'description' 	: a.description,
+		'username' 		: a.user.username,
+		'uid'			: a.user.id,
+		'created_date' 	: a.created_date,
+		'updated_date' 	: a.updated_date,
+		'likes'			: ALike.objects.filter(answer=a.id).count(),
+		'myAns'			: False,			
+	}
+
+	#check if logged in user liked this answer		
+	try:
+		print a.id,user.id
+   		likeObj = ALike.objects.filter(answer=a.id,user=user.id).get()   			
+   		mylike = likeObj.like
+	except ALike.DoesNotExist:
+   		mylike = None
+   	except AttributeError:
+   		myLike = None	
+ 	  			
+ 	row['mylike'] = mylike   		
+		
+ 	#check if the logged in user added this answer 	
+	if user.id == a.user.id:
+		row['myAns'] = True;
+
+	return row

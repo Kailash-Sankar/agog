@@ -4,7 +4,7 @@
     <div class="mdl-card__title">
       <h2 class="mdl-card__title-text">Ask a Question</h2>
       <span class="add-ico">
-        <i class="material-icons ico-anim-{{newDataAvailable}}" ng-click="updateList()">autorenew</i>                    
+        <i class="material-icons ico-anim-{{newDataAvailable}}" >autorenew</i>                    
       </span>
     </div>
 
@@ -33,12 +33,12 @@
 
         <br/>
 
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
         Preview
         </button>
 
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">
-        Submit
+        <button type="button" ng-click="saveQuestion()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary">
+        Save
         </button>
 
       </form>

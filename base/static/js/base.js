@@ -15,7 +15,7 @@ app.factory('jaximus', function ($http, $rootScope, $timeout) {
        $timeout(function() {
          $rootScope.toast.show = false;
        },2000);
-     },
+      },
 
       //loads a chunk of data
       loadDataSet : function(url) {
@@ -31,11 +31,21 @@ app.factory('jaximus', function ($http, $rootScope, $timeout) {
             'like' : like, 
             //'csrfmiddlewaretoken' : $('input[name="csrfmiddlewaretoken"]').val()
           }
-       };
-       return $http(req);
-     }   
-   };
- });
+        };
+        return $http(req);
+      },
+
+      //post data
+      saveDataSet : function(url,data) {
+        var req = {
+          method: 'POST',
+          url: url,
+          data: data
+        };
+        return $http(req);  
+      } 
+  };
+});
 
 
 // Material design lite isn't fine with dynamic reconstruction of pages.
@@ -69,6 +79,40 @@ app.run(function($rootScope) {
 
 
 app.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 }]);
+
+app.filter('orderObjectBy', function(){
+ return function(input, attribute) {
+    if (!angular.isObject(input)) return input;
+
+    var array = [];
+    for(var objectKey in input) {
+        array.push(input[objectKey]);
+    }
+
+    array.sort(function(a, b){
+        a = parseInt(a[attribute]);
+        b = parseInt(b[attribute]);
+        return a - b;
+    });
+    return array;
+ }
+});
+
+app.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+});
+
+/*
+app.directive('eatClick', function() {
+    return function(scope, element, attrs) {
+        $(element).click(function(event) {
+            event.preventDefault();
+        });
+    };
+});
+*/
