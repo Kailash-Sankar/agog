@@ -51,11 +51,11 @@
     Auth, CSRF,ORM
  
 ## Features - Pending
-   - like functionality isn't setup on Dashboard
-   - trending page results are based on simple queriers and do not consider recent activity
-   - tag preferences are not considered on dashboard
+   - vote on Dashboard
+   - trending data based on activity and tags   - 
    - edit option for questions, answers and profile
    - trim question, like count font-size redux
+   - preview/better editor (NicEdit)
     
 ## Installation
   - setup virtualenv Python 2.7
