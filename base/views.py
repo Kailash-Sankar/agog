@@ -131,7 +131,7 @@ def trending(request,type):
 		trendingItems = list( Question.objects.all()[:5].values('summary','likes','id') )
 		
 	elif type == 'answers':	
-		trendingItems = [{ 'summary' : 'To be done later' }]
+		trendingItems = []
 		RecentlyAnsweredQuestions()
 		
 	elif type == 'my':
@@ -188,8 +188,8 @@ def saveQuestion(request):
 	qObj.save();
 
 	for tag in data['tags']:
-		if tag['id']:
-			tObj = QTag(cat_id=tag['id'],question_id=qObj.id)
+		if tag['cid']:
+			tObj = QTag(cat_id=tag['cid'],question_id=qObj.id)
 			tObj.save()
 		else:
 			print 'custom tags',tag['name']
