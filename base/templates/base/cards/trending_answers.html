@@ -4,7 +4,8 @@
     <div class="mdl-card__title">
       <h2 class="mdl-card__title-text">Do you agree?</h2>
       <span class="add-ico">
-        <i class="material-icons ico-anim-{{newDataAvailable}}" ng-click="updateList()">autorenew</i>                    
+        <i class="material-icons" ng-class="{loading: jaxip == true }"
+        ng-click="updateList()">autorenew</i>                    
       </span>
     </div>
 

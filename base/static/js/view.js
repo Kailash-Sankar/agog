@@ -72,27 +72,34 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
   $scope.addMode = false;
   $scope.new = {};
 
-
+  $scope.jaxip=false;
   loadAnswers();  
 
   //indicate when new data is ready
   $scope.newDataAvailable = false;
 
   //load answers for a qid
-  function loadAnswers() {        	   
+  function loadAnswers() { 
+    $scope.jaxip=true;       	   
     var url = $rootScope.qid + '/answers/' + $scope.page;    
     jaximus.loadDataSet(url)
     .success(function(data, status, headers, config) {
     	console.log(data);
+     $scope.jaxip=false;
      $scope.answers = data;          
      $scope.noa =  Object.keys($scope.answers).length;	     
    })
     .error(function(data, status, headers, config) {
+      $scope.jaxip=false;
       console.log('something went wrong.')
     });
 
     jaximus.toastThis('Data loaded.');
   }
+
+  $scope.updateList = function() {
+    loadAnswers();
+  };
 
   //like an anwser
   $scope.like = function(aid) {

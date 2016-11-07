@@ -42,7 +42,12 @@ def user_login(request):
 			    # the authentication system was unable to verify the username and password
 			    error = "The username and password were incorrect."
 	else: 
-		error = "Username & Password are mandatory."
+		error = "Username & Password are mandatory."		
+
+	
+	if error != "":
+		return redirect(dashboard)
+
 	return render( request, 'base/home.html', { 'error' : error })			    
 
 
@@ -53,9 +58,8 @@ def user_logout(request):
 
 #---- pages ----
 
-def dashboard(request):
-	tf = '';
-	return render( request, 'base/dashboard.html', { 'tf' : tf })
+def dashboard(request):	
+	return render( request, 'base/dashboard.html')
 	
 def ask(request):	
 	return render( request, 'base/ask_question.html', {})
@@ -127,7 +131,7 @@ def trending(request,type):
 		trendingItems = list( Question.objects.all()[:5].values('summary','likes','id') )
 		
 	elif type == 'answers':	
-		trendingItems = [{ 'summary' : 'it works.' },{ 'summary' : 'why'}]
+		trendingItems = [{ 'summary' : 'To be done later' }]
 		RecentlyAnsweredQuestions()
 		
 	elif type == 'my':
