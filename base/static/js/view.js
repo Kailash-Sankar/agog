@@ -99,18 +99,18 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
     console.log('like',aid);
 
     if( $scope.answers[aid].mylike == true ) {
-      return;
+      //undo my like
+      do_dec(aid,null)
     }
-
-    $scope.answers[aid].likes += 1;
-    
-    jaximus.likePost('answer',aid,true)
-    .success(function(){
-      $scope.answers[aid].mylike = true;  
-    })
-    .error(function(){
-      $scope.answers[aid].likes -= 1;
-    });
+    else if( $scope.answers[aid].mylike == false ) {
+      //undo dislike and like this      
+      do_inc(aid,null)
+      do_inc(aid,true)
+    }
+    else {
+      do_inc(aid,true);
+    }
+  
   }
 
   //dislike an answer
@@ -118,14 +118,38 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
     console.log('dislike',aid);
 
     if( $scope.answers[aid].mylike == false ) {
-      return;
+      //undo my dislike
+      do_inc(aid,null)
     }
+    else if( $scope.answers[aid].mylike == true  ) {
+      //undo like and dislike this
+      do_dec(aid,null)
+      do_dec(aid,false)
+    }
+    else {
+      do_dec(aid,false);
+    }
+   
+  }
 
-    $scope.answers[aid].likes -= 1;
-
-    jaximus.likePost('answer',aid,false)
+  function do_inc(aid,bool) {
+    $scope.answers[aid].likes += 1;
+    
+    jaximus.likePost('answer',aid,bool,$scope.answers[aid].mylike)
     .success(function(){
-      $scope.answers[aid].mylike = false;
+      $scope.answers[aid].mylike = bool;  
+    })
+    .error(function(){
+      $scope.answers[aid].likes -= 1;
+    });
+  }
+
+  function do_dec(aid,bool) {
+     $scope.answers[aid].likes -= 1;
+
+    jaximus.likePost('answer',aid,bool,$scope.answers[aid].mylike)
+    .success(function(){
+      $scope.answers[aid].mylike = bool;
     })
     .error(function(){
       $scope.answers[aid].likes += 1;

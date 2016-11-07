@@ -7,6 +7,7 @@ from base.models import *
 import logging
 import json
 from django.db.models import F
+from django.db.models import Count
 
 #logger instance
 logger = logging.getLogger(__name__)
@@ -71,7 +72,7 @@ def profile(request):
 def question(request,qid):
 	print 'question:',qid
 
-	qObj = Question.objects.get(id=qid); #.values();
+	qObj = Question.objects.get(id=qid);
 	user = request.user;
 
 	q = {
@@ -96,9 +97,13 @@ def question(request,qid):
    		myLike = None	
  	  			
  	q['mylike'] = mylike   		
-		
+	
+	#check if it's logged in user's question	
  	if qObj.user.id == user.id:
 		q['myQ'] = True
+
+	#get question tags
+	q['tags'] = QTags(qid)
 
 	print q;
 	return JsonResponse(q,safe=False);
@@ -123,6 +128,7 @@ def trending(request,type):
 		
 	elif type == 'answers':	
 		trendingItems = [{ 'summary' : 'it works.' },{ 'summary' : 'why'}]
+		RecentlyAnsweredQuestions()
 		
 	elif type == 'my':
 		trendingItems = list( 
@@ -223,13 +229,6 @@ def userTags(request):
 
 	return JsonResponse(tags,safe=False)
 
-'''		
-	for x in xtags:
-		if x not in vtags:
-			print 'deleting',
-			delObj = UTag.objects.filter(cat_id=id,user_id=user.id);
-			delObj.delete()	
-'''
 def saveUserTags(request):
 	tags = json.loads(request.body)
 	user = request.user
@@ -262,6 +261,13 @@ def saveUserTags(request):
 
 # ---------- local routines -----------
 
+def RecentlyAnsweredQuestions():
+	#list( Question.objects.all()[:5].values('summary','likes','id') )
+	x = Question.objects.annotate(noa=Count('answer')).order_by('-noa')[:5]	.values()
+	print 'QA',x;
+
+
+
 #build row for one answer
 def buildAnswerRow(a,user):
 	row = {
@@ -271,7 +277,7 @@ def buildAnswerRow(a,user):
 		'uid'			: a.user.id,
 		'created_date' 	: a.created_date,
 		'updated_date' 	: a.updated_date,
-		'likes'			: ALike.objects.filter(answer=a.id).count(),
+		'likes'			: a.likes,
 		'myAns'			: False,			
 	}
 
@@ -314,18 +320,23 @@ def likeThis(Obj,data,user):
 	print data
 	print Obj
 
-	if Obj and type(bool_like) == type(True):
-
+	if Obj:
+		print 'before',Obj.likes
 		#update count in answer		
 		if bool_like == True:		
 			#upvote
-			Obj.likes = Obj.likes + 1
+			Obj.likes = F('likes') + 1
 		elif bool_like == False:
 			#down vote
-			Obj.likes = Obj.likes - 1
-		else:
+			Obj.likes = F('likes') - 1
+		else: 
+			print 'code should come here'
+			#bool_like is None
 			#delete the vote
-			Obj.likes = Obj.likes - 1
+			if data['myLike'] == True:
+				Obj.likes = F('likes') - 1
+			elif data['myLike'] == False: 	
+				Obj.likes = F('likes') + 1
 
 		if isinstance(Obj, Answer):
 			#update/create like row		
@@ -353,6 +364,7 @@ def likeThis(Obj,data,user):
 
 		#save incremented count	
 		Obj.save()
+		print 'after',Obj.likes
 		status = True
 	
 	return { 'status' : status, 'id' : Obj.id }

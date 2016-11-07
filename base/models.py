@@ -39,7 +39,7 @@ class QLike(models.Model):
 	user = models.ForeignKey(User)
 	question = models.ForeignKey('Question')
 	created_date = models.DateTimeField(auto_now_add=True)
-	like = models.BooleanField()
+	like = models.NullBooleanField()
 
 	class Meta:
 		unique_together = (('user', 'question'),)

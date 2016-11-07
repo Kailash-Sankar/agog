@@ -23,12 +23,13 @@ app.factory('jaximus', function ($http, $rootScope, $timeout) {
       },
 
       //post actions
-      likePost : function(type,id,like) {
+      likePost : function(type,id,like,myLike) {
         var req = {
           method: 'POST',
           url: '/' + type + '/' + id + '/like',          
           data: { 
-            'like' : like, 
+            'like' : like,
+            'myLike' : myLike
             //'csrfmiddlewaretoken' : $('input[name="csrfmiddlewaretoken"]').val()
           }
         };
@@ -77,12 +78,13 @@ app.run(function($rootScope) {
   
 });
 
-
+///csrf token for ajax calls
 app.config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 }]);
 
+//sorting for the complex data
 app.filter('orderObjectBy', function(){
  return function(input, attribute) {
     if (!angular.isObject(input)) return input;
@@ -101,6 +103,7 @@ app.filter('orderObjectBy', function(){
  }
 });
 
+//reversing array sort
 app.filter('reverse', function() {
   return function(items) {
     return items.slice().reverse();
@@ -120,6 +123,13 @@ app.run(function($rootScope,$window) {
 
 });
 
+//global redir for the non-anchor tags
+$('.redir-click').on('click',function(){
+  var url = $(this).attr('data-href');
+  console.log('redirecting',url);
+  window.location.href = url;
+})
+
 /* dirty bit check on updated mdl form elements
 app.directive('mdlDirtyCheck', ['$timeout', function ($timeout) {
   return {
@@ -135,9 +145,7 @@ app.directive('mdlDirtyCheck', ['$timeout', function ($timeout) {
     }
   };
 }]);
-*/
 
-/*
 app.directive('eatClick', function() {
     return function(scope, element, attrs) {
         $(element).click(function(event) {

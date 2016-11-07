@@ -19,10 +19,22 @@
       <span class="post-sig">
         <span class="add-ico">
           <i class="material-icons profile">account_box</i>
-        </span>        
-        <span class="down" ng-if="q.myQ">
-            <a href="#">Edit</a>
-        </span>                       
+        </span>  
+
+        <span class="down">      
+          <span class="" ng-if="q.myQ">
+            <a href="#">Edit</a>            
+          </span> 
+          <span ng-if="q.myQ && q.tags.length > 0" > | </span>
+          <span class="" ng-if="q.tags.length > 0">
+              Tags: 
+              <span ng-repeat="tag in q.tags">
+                <i class="chip">{{ tag.name }} </i>
+                <i ng-hide="$last">,</i>
+              </span>
+          </span> 
+        </span>  
+
         <span class="up">
           {{ q.user }}
         </span>
