@@ -38,8 +38,8 @@ Qweb app
     - add favourite tags
   -/admin/ - Django amdin site  
  
-## Features - Done 
-  - Q&A
+## Features - Done
+  - Q&A
     Add Questions and answers
   - Votes
     for questions and answers - upvote, downvote, undo upvote, undo downvote
@@ -55,6 +55,7 @@ Qweb app
    - trending page results are based on simple queriers and do not consider recent activity
    - tag preferences are not considered on dashboard
    - edit option for questions, answers and profile
+   - trim question, like count font-size redux
     
 ## Installation
   - setup virtualenv Python 2.7
@@ -64,7 +65,7 @@ Qweb app
   - configure wsgi or run local server
   
 ## Issues
-   There are bugs, I am fixing them as I see them. 
+   There might be bugs. I have not negative tested any aspect.    
    
 ## Notes
   I am a beginner with Django & Angular but it was fun building through experimentation. I haven't been able to complete all the features i hoped to due to my lack of familiarity in Django, but there's a solid foundation for the app to grow.
