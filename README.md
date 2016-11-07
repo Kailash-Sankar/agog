@@ -39,19 +39,16 @@ Qweb app
   -/admin/ - Django amdin site  
  
 ## Features - Done 
-  #Q&A
-  Add Questions and answers
-
-  #Votes
-  for questions and answers - upvote, downvote, undo upvote, undo downvote
-  
-  #Tags
-  add tags to a question
-  add tags to profile
-  provision for accepting custom user tags
-  
-  #Security
-  Auth, CSRF,ORM
+  - Q&A
+    Add Questions and answers
+  - Votes
+    for questions and answers - upvote, downvote, undo upvote, undo downvote
+  - Tags
+    add tags to a question
+    add tags to profile
+    provision for accepting custom user tags
+  - Security
+    Auth, CSRF,ORM
  
 ## Features - Pending
    - like functionality isn't setup on Dashboard
@@ -59,7 +56,6 @@ Qweb app
    - tag preferences are not considered on dashboard
    - edit option for questions, answers and profile
     
-
 ## Installation
   - setup virtualenv Python 2.7
   - pip on the requirements.txt
@@ -68,12 +64,13 @@ Qweb app
   - configure wsgi or run local server
   
 ## Issues
-   There are bugs. I am new to Python/Django but it was fun building through experimentation. Angular also had it's challenges but the end result is a good foundation for the app.
+   There are bugs, I am fixing them as I see them. 
    
-
 ## Notes
-  - i'll add a section explaining what each api endpoint does
+  I am a beginner with Django & Angular but it was fun building through experimentation. I haven't been able to complete all the features i hoped to due to my lack of familiarity in Django, but there's a solid foundation for the app to grow.
+  I realize now how easy it is to host a django app when compared to the dependency nightmares i've faced while setting up Catalyst.
   
+
 ## Tests
 There are a few test accounts added through admin for testing.
 All models required for testing and reqistered in admin site.
