@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse 
+from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -8,6 +9,7 @@ import logging
 import json
 from django.db.models import F
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
 #logger instance
 logger = logging.getLogger(__name__)
@@ -28,14 +30,16 @@ def user_login(request):
 	if request.META.get('REQUEST_METHOD') == 'POST':
 		u = request.POST.get('username',"");
 		p = request.POST.get('password',"");
+		#nxt = request.POST.get('next')
 		if u and p:		
 			user = authenticate(username=u, password=p)
 			if user is not None:
 			    # the password verified for the user
 			    if user.is_active:
-			        #print("User is valid, active and authenticated")
-			        login(request, user)
-			        redirect(dashboard)
+			        print("User is valid, active and authenticated")
+			        login(request, user)			        
+			        return redirect(dashboard)
+			        #return HttpResponseRedirect("/dashboard/")	
 			    else:
 			        error = "The password is valid, but the account has been disabled!"
 			else:
@@ -46,28 +50,34 @@ def user_login(request):
 
 	
 	if error != "":
+		print 'nothing'
 		return redirect(dashboard)
+		#return HttpResponseRedirect("/dashboard/")
 
 	return render( request, 'base/home.html', { 'error' : error })			    
 
 
 def user_logout(request):
     logout(request)
+    return render( request, 'base/home.html', { 'status': 'logout successfull'})
     # Redirect to a success page.
 
 
 #---- pages ----
-
+@login_required()
 def dashboard(request):	
 	return render( request, 'base/dashboard.html')
 	
+@login_required()	
 def ask(request):	
 	return render( request, 'base/ask_question.html', {})
-	
+
+@login_required()	
 def view_question(request,qid):
 	user = request.user;
 	return render( request, 'base/view_question.html', { 'qid' : qid })
 
+@login_required()
 def profile(request):
 	return render( request, 'base/user_profile.html')	
 
