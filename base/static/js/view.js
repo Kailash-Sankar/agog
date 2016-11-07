@@ -183,7 +183,7 @@ app.controller('Answers', function($scope, $rootScope, $timeout, jaximus) {
         //reset add form
         $scope.addMode = false;
         $scope.new = {};
-        
+        $scope.noa =  Object.keys($scope.answers).length;
         jaximus.toastThis('Answer Saved.');          
 
       })
