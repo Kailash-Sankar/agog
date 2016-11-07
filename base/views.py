@@ -35,7 +35,7 @@ def user_login(request):
 			    if user.is_active:
 			        #print("User is valid, active and authenticated")
 			        login(request, user)
-			        redirect('assign_training')
+			        redirect(dashboard)
 			    else:
 			        error = "The password is valid, but the account has been disabled!"
 			else:
