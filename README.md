@@ -37,17 +37,25 @@ Qweb app
     - add favourite tags
  
 ## Feature Set
+  #Q&A
+  Add Questions and answers
+
+
   #Votes
   for questions and answers - upvote, downvote, undo upvote, undo downvote
   
   #Tags
-  add a question with related tags
+  add tags to a question
+  add tags to profile
   
+  #Security
+  Auth, CSRF,ORM
  
 ## Missing Features  
    - like functionality isn't setup on Dashboard
    - trending page results are based on simple queriers and do not consider recent activity
-   - tag preferences are not considered on dashboard    
+   - tag preferences are not considered on dashboard
+   - edit option for questions, answers and profile
     
 
 ## Installation
