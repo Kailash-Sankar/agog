@@ -98,7 +98,7 @@ def question(request,qid):
 		'updated_date' 	: qObj.updated_date,
 		'likes'			: qObj.likes,
 		'myQ'		    : False,
-		'myLike'		: False,
+		'myLike'		: None,
 	}
 
 	#check if logged in user liked this answer		

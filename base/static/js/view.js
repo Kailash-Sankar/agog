@@ -18,45 +18,68 @@ app.controller('Questions', function($scope, $http, $rootScope, $timeout, jaximu
       });
 
       jaximus.toastThis('Data loaded.');
-    }
+    };
 
     //like a question
     $scope.like = function(qid) {
       console.log('like',qid);
 
       if( $scope.q.mylike == true ) {
-        return;
+        //undo my like
+        do_dec(qid,null)
       }
-
-      $scope.q.likes += 1;
-
-      jaximus.likePost('question',qid,true)
-      .success(function(){
-        $scope.q.mylike = true;  
-      })
-      .error(function(){
-        $scope.q.likes -= 1;
-      });
-    }
+      else if( $scope.q.mylike == false ) {
+        //undo dislike and like this      
+        do_inc(qid,null)
+        do_inc(qid,true)
+      }
+      else {
+        do_inc(qid,true);
+      }
+    };
 
     //dislike a question
     $scope.dislike = function(qid) {
       console.log('dislike',qid);
 
+
       if( $scope.q.mylike == false ) {
-        return;
+        //undo my dislike
+        do_inc(qid,null)
       }
+      else if( $scope.q.mylike == true  ) {
+        //undo like and dislike this
+        do_dec(qid,null)
+        do_dec(qid,false)
+      }
+      else {
+        do_dec(qid,false);      
+     }
+    };
 
+    function do_inc(aid,bool) {
+      $scope.q.likes += 1;
+    
+    jaximus.likePost('question',aid,bool,$scope.q.mylike)
+    .success(function(){
+      $scope.q.mylike = bool;  
+    })
+    .error(function(){
       $scope.q.likes -= 1;
+    });
+  };
 
-      jaximus.likePost('question',qid,false)
-      .success(function(){
-        $scope.q.mylike = false;
-      })
-      .error(function(){
-        $scope.q.likes += 1;
-      });
-    }
+  function do_dec(aid,bool) {
+     $scope.q.likes -= 1;
+
+    jaximus.likePost('question',aid,bool,$scope.q.mylike)
+    .success(function(){
+      $scope.q.mylike = bool;
+    })
+    .error(function(){
+      $scope.q.likes += 1;
+    });
+  };
 
 });
 
