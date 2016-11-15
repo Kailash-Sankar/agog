@@ -1,5 +1,5 @@
 #QWeb app
-:sparkles: 0.0.0 First Prtotype :sparkles:
+:sparkles: 0.0.0 First Prototype :sparkles:
 
 ## Synopsis
   http://felhound16.pythonanywhere.com/
