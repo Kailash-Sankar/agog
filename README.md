@@ -11,15 +11,15 @@
   
 ## Design Principles
   The UI is designed with Material Design in mind. Each indepent feature/item is considered as a card.
-  The cards are maintained as reusuable angular templates maximizing DRY principle.
+  The cards are maintained as reusable angular templates maximizing DRY principle.
   
-  Reuqests render a template which is enacapsulated by a wrapper and includes cards releavant to the request page.
+  Requests render a template which is contained by a wrapper and includes cards relevant to the requested page.
   The angular framework encapsulates each page's content. The frame is loaded first followed by request to populate each of the cards.
   
   Each card has it's own angular controller for the operations provided within it.
   
   Django's ORM is used for building data.
-  Endpoints which return just plain data are kept seperate so that they can be moved out in future as an API app
+  Endpoints which return just plain data are kept seperate so that they can be moved out in  as an API app later.
     
 ## Pages
   All pages except home are responsive. 
