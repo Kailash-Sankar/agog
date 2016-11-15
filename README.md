@@ -1,4 +1,5 @@
 #QWeb app
+:sparkles: 0.0.0 First Prtotype :sparkles:
 
 ## Synopsis
   http://felhound16.pythonanywhere.com/
@@ -56,6 +57,7 @@
    - edit option for questions, answers and profile
    - trim question, like count font-size redux
    - preview/better editor (NicEdit)
+   - Registration
     
 ## Installation
   - setup virtualenv Python 2.7
@@ -68,12 +70,12 @@
    There might be bugs. I have not negative tested any aspect.    
    
 ## Notes
-  I am a beginner with Django & Angular but it was fun building through experimentation. I haven't been able to complete all the features i hoped to due to my lack of familiarity in Django, but there's a solid foundation for the app to grow.
+  I am a beginner with Django & Angular but it was fun building through experimentation. Now there's a solid foundation for the app to grow and for me to learn. Over the coming weekends I'll be pushing updates as I explore django more. 
   I realize now how easy it is to host a django app when compared to the dependency nightmares i've faced while setting up Catalyst.
   
 
 ## Tests
-There are a few test accounts added through admin for testing.
+There are a few test accounts added through admin for testing. [u: alpha,beta,gamma,delta,omega , p:testpwd45 ]
 All models required for testing and reqistered in admin site.
 Debug is set to true
 
