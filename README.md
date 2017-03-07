@@ -2,7 +2,6 @@
 :sparkles: 0.0.0 First Prototype :sparkles:
 
 ## Synopsis
-  http://felhound16.pythonanywhere.com/
   
   A web app for Q & A built on 
   - Python, Django
