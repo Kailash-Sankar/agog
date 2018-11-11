@@ -1,5 +1,5 @@
 #QWeb app
-:sparkles: 0.0.0 First Prototype :sparkles:
+:sparkles: 0.0.0 This app was built over a weekend as a dev interview challenge :sparkles:
 
 ## Synopsis
   
@@ -66,7 +66,7 @@
   - configure wsgi or run local server
   
 ## Issues
-   There might be bugs. I have not negative tested any aspect.    
+   There might be bugs. The app was developed over a short time to solve an interview challenge.
    
 ## Notes
   I am a beginner with Django & Angular but it was fun building through experimentation. Now there's a solid foundation for the app to grow and for me to learn. Over the coming weekends I'll be pushing updates as I explore django more. 
